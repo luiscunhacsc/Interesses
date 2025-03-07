@@ -5,13 +5,13 @@ import re
 # FUNÇÕES AUXILIARES
 # ------------------------------
 
-# Validação de e-mail
 def validar_email(email):
+    """Valida o formato de um e-mail."""
     regex = r"[^@]+@[^@]+\.[^@]+"
     return re.match(regex, email)
 
-# Função para obter um ícone para cada interesse
 def get_icon(interest):
+    """Retorna um emoji consoante o interesse."""
     i = interest.lower()
     if "cinema" in i:
         return "🎬"
@@ -36,16 +36,16 @@ def get_icon(interest):
     else:
         return "⭐"
 
-# Função para alternar (toggle) um interesse ao clicar no cartão
 def toggle_interest(interest):
+    """Adiciona ou remove um interesse da lista."""
     if interest in st.session_state.selected_interesses:
         st.session_state.selected_interesses.remove(interest)
     else:
         st.session_state.selected_interesses.append(interest)
-    st.rerun()
+    # st.rerun()
 
-# Função para calcular os cursos recomendados (lógica com pontuação ponderada)
 def obter_cursos_recomendados(selecionados):
+    """Calcula os cursos recomendados com base numa lógica de pontuação ponderada."""
     recomendados = {}
     for curso, keywords in course_keywords.items():
         score = 0
@@ -68,7 +68,7 @@ st.set_page_config(page_title="Orientação Vocacional", layout="wide")
 
 # Inicialização das variáveis de sessão
 if "page" not in st.session_state:
-    st.session_state.page = "selecao_interesses"
+    st.session_state.page = "inicio"
 if "selected_interesses" not in st.session_state:
     st.session_state.selected_interesses = []
 if "verInteressesDev" not in st.session_state:
@@ -137,21 +137,45 @@ course_icons = {
 }
 
 # ------------------------------
-# PÁGINA 1: SELEÇÃO DE INTERESSES
+# PÁGINAS
 # ------------------------------
-if st.session_state.page == "selecao_interesses":
+
+# Página 0: Ecrã de Boas-Vindas
+if st.session_state.page == "inicio":
     st.markdown(
-        '<div class="main-header"><h1>Bem-vindo à Orientação Vocacional do ISMT</h1><p>Descobre os cursos que combinam com os teus interesses!</p></div>',
+        """
+        <div style="background-color:#4a90e2; padding:50px; border-radius:10px; text-align:center; color:white;">
+            <h1 style="font-size:3em;">Descobre o teu Futuro no ISMT</h1>
+            <p style="font-size:1.5em; max-width:800px; margin:0 auto;">
+                Bem-vindo(a) ao nosso espaço de Orientação Vocacional! 
+                Vem descobrir qual dos nossos cursos combina melhor com os teus interesses 
+                e inicia uma jornada que pode mudar o teu futuro. 
+                Prepara-te para explorar um mundo de possibilidades e encontrar a formação 
+                que mais se adequa a ti!
+            </p>
+            <img src="https://i.imgur.com/6ZQZ6gG.png" alt="Boas-vindas" style="max-width:70%; margin-top:20px;">
+            <br><br>
+        </div>
+        """,
         unsafe_allow_html=True
     )
-    st.markdown("### Seleciona os teus hobbies e interesses (clicando nos cartões):")
-    
+    st.write("")
+
+    # Botão para avançar
+    if st.button("Começar a Descobrir os Meus Cursos"):
+        st.session_state.page = "selecao_interesses"
+        st.rerun()
+
+# Página 1: Seleção de Interesses
+elif st.session_state.page == "selecao_interesses":
+    st.markdown(
+        '<div class="main-header"><h1>Seleciona os Teus Interesses</h1><p>Clica nos cartões para indicar os teus hobbies!</p></div>',
+        unsafe_allow_html=True
+    )
     total_interesses = len(interesses)
-    # Ajusta o número de colunas para maximizar a visibilidade (ex: 10 colunas)
     colunas_por_linha = 10  
     linhas = total_interesses // colunas_por_linha
-    
-    # Organiza os cartões numa grelha
+
     for i in range(linhas):
         cols = st.columns(colunas_por_linha)
         for j in range(colunas_por_linha):
@@ -160,12 +184,12 @@ if st.session_state.page == "selecao_interesses":
                 inter = interesses[index]
                 icon = get_icon(inter)
                 label = f"{icon} {inter}"
+                # Se já estiver selecionado, prefixa com "✅"
                 if inter in st.session_state.selected_interesses:
                     label = f"✅ {label}"
                 # Cada botão, ao ser clicado, alterna o interesse
-                cols[j].button(label, key=f"card_{index}", on_click=lambda inter=inter: toggle_interest(inter))
-    
-    # Mostra a lista de interesses selecionados apenas se a flag verInteressesDev for True
+                cols[j].button(label, key=f"card_{index}", on_click=lambda i=inter: toggle_interest(i))
+
     if st.session_state.verInteressesDev:
         st.markdown("### Interesses Selecionados:")
         st.write(st.session_state.selected_interesses)
@@ -174,20 +198,18 @@ if st.session_state.page == "selecao_interesses":
         st.session_state.page = "resultado_cursos"
         st.rerun()
 
-# ------------------------------
-# PÁGINA 2: RESULTADOS E CONTATO
-# ------------------------------
+# Página 2: Resultados e Contacto
 elif st.session_state.page == "resultado_cursos":
     st.markdown(
         '<div class="main-header"><h1>Cursos Compatíveis</h1><p>Estes cursos combinam com os teus interesses!</p></div>',
         unsafe_allow_html=True
     )
-    
+
     # Botão para voltar à seleção de interesses
     if st.button("Voltar à seleção de interesses"):
         st.session_state.page = "selecao_interesses"
         st.rerun()
-    
+
     recomendados = obter_cursos_recomendados(st.session_state.selected_interesses)
     max_score = max(recomendados.values()) if recomendados else 0
     threshold = 0.5 * max_score
