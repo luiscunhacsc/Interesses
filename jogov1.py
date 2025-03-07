@@ -42,7 +42,7 @@ def toggle_interest(interest):
         st.session_state.selected_interesses.remove(interest)
     else:
         st.session_state.selected_interesses.append(interest)
-    # st.rerun()
+    # O Streamlit refaz o script automaticamente após a interação
 
 def obter_cursos_recomendados(selecionados):
     """Calcula os cursos recomendados com base numa lógica de pontuação ponderada."""
@@ -160,8 +160,6 @@ if st.session_state.page == "inicio":
         unsafe_allow_html=True
     )
     st.write("")
-
-    # Botão para avançar
     if st.button("Começar a Descobrir os Meus Cursos"):
         st.session_state.page = "selecao_interesses"
         st.rerun()
@@ -184,10 +182,8 @@ elif st.session_state.page == "selecao_interesses":
                 inter = interesses[index]
                 icon = get_icon(inter)
                 label = f"{icon} {inter}"
-                # Se já estiver selecionado, prefixa com "✅"
                 if inter in st.session_state.selected_interesses:
                     label = f"✅ {label}"
-                # Cada botão, ao ser clicado, alterna o interesse
                 cols[j].button(label, key=f"card_{index}", on_click=lambda i=inter: toggle_interest(i))
 
     if st.session_state.verInteressesDev:
@@ -209,7 +205,7 @@ elif st.session_state.page == "resultado_cursos":
     if st.button("Voltar à seleção de interesses"):
         st.session_state.page = "selecao_interesses"
         st.rerun()
-
+    
     recomendados = obter_cursos_recomendados(st.session_state.selected_interesses)
     max_score = max(recomendados.values()) if recomendados else 0
     threshold = 0.5 * max_score
@@ -238,3 +234,10 @@ elif st.session_state.page == "resultado_cursos":
                 st.success("Obrigado! Em breve entraremos em contacto.")
         else:
             st.error("Por favor, preenche ambos os campos: nome e e-mail.")
+
+    # Botão para limpar todos os dados e voltar ao início
+    if st.button("Começar de Novo"):
+        st.session_state.selected_interesses = []
+        st.session_state.page = "inicio"
+        st.session_state.verInteressesDev = False
+        st.rerun()
