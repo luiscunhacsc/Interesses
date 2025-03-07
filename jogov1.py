@@ -153,7 +153,7 @@ if st.session_state.page == "inicio":
                 Prepara-te para explorar um mundo de possibilidades e encontrar a formação 
                 que mais se adequa a ti!
             </p>
-            <img src="https://ismt.pt/" alt="Boas-vindas" style="max-width:70%; margin-top:20px;">
+            <img src="https://ismt.pt/ismt/img/logo-ismt.png" alt="Boas-vindas" style="max-width:70%; margin-top:20px;">
             <br><br>
         </div>
         """,
@@ -197,7 +197,7 @@ elif st.session_state.page == "selecao_interesses":
 # Página 2: Resultados e Contacto
 elif st.session_state.page == "resultado_cursos":
     st.markdown(
-        '<div class="main-header"><h1>Cursos Compatíveis</h1><p>Estes cursos combinam com os teus interesses!</p></div>',
+        '<div class="main-header"><h1>Cursos Compatíveis no ISMT</h1><p>Estes cursos combinam com os teus interesses!</p></div>',
         unsafe_allow_html=True
     )
 
