@@ -153,7 +153,7 @@ if st.session_state.page == "inicio":
                 Prepara-te para explorar um mundo de possibilidades e encontrar a formação 
                 que mais se adequa a ti!
             </p>
-            <img src="https://i.imgur.com/6ZQZ6gG.png" alt="Boas-vindas" style="max-width:70%; margin-top:20px;">
+            <img src="https://ismt.pt/" alt="Boas-vindas" style="max-width:70%; margin-top:20px;">
             <br><br>
         </div>
         """,
